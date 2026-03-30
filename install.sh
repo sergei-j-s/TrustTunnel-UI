@@ -185,11 +185,23 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-# Node.js
+# Node.js via nvm
+export NVM_DIR="/root/.nvm"
+
+if [ ! -f "$NVM_DIR/nvm.sh" ]; then
+  info "Installing nvm..."
+  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash >/dev/null 2>&1
+  success "nvm installed"
+fi
+
+# shellcheck source=/dev/null
+source "$NVM_DIR/nvm.sh"
+
 if ! command -v node &>/dev/null; then
-  info "Installing Node.js 22..."
-  curl -fsSL https://deb.nodesource.com/setup_22.x | bash - >/dev/null 2>&1
-  apt-get install -y nodejs >/dev/null 2>&1
+  info "Installing Node.js 22 via nvm..."
+  nvm install 22 >/dev/null 2>&1
+  nvm use 22 >/dev/null 2>&1
+  nvm alias default 22 >/dev/null 2>&1
 fi
 
 NODE_VERSION=$(node -e "console.log(process.versions.node.split('.')[0])")
@@ -197,7 +209,7 @@ if [ "$NODE_VERSION" -lt "$NODE_MIN_VERSION" ]; then
   error "Node.js >= $NODE_MIN_VERSION required, found $NODE_VERSION"
   exit 1
 fi
-success "Node.js $(node -v)"
+success "Node.js $(node -v) via nvm"
 
 # Копирование файлов
 info "Copying files to $INSTALL_DIR..."
@@ -218,6 +230,7 @@ success "Frontend built"
 
 # Systemd сервис
 JWT_SECRET=$(openssl rand -hex 32)
+NODE_BIN=$(which node)
 
 cat > /etc/systemd/system/trusttunnel-ui.service << EOF
 [Unit]
@@ -227,7 +240,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=$INSTALL_DIR/backend
-ExecStart=$(which node) src/index.js
+ExecStart=$NODE_BIN src/index.js
 Restart=on-failure
 RestartSec=5
 Environment=NODE_ENV=production
