@@ -1,4 +1,4 @@
-import { getServiceStatus, controlService, getServiceLogs, enableService } from '../utils/systemd.js'
+import { getServiceStatus, controlService, getServiceLogs, enableService, detectServiceName } from '../utils/systemd.js'
 import { isTrustTunnelInstalled, installTrustTunnel } from '../utils/ttConfig.js'
 import { config } from '../config.js'
 
@@ -11,6 +11,12 @@ export async function serviceRoutes(fastify) {
     return { ...status, installed }
   })
 
+  fastify.get('/api/service/name', { onRequest: [fastify.authenticate] }, async () => {
+    const configured = config.trusttunnel.serviceName
+    const detected = await detectServiceName(configured)
+    return { configured, detected }
+  })
+
   fastify.post('/api/service/:action', { onRequest: [fastify.authenticate] }, async (request, reply) => {
     const { action } = request.params
     const allowed = ['start', 'stop', 'restart']
@@ -18,9 +24,10 @@ export async function serviceRoutes(fastify) {
       return reply.code(400).send({ error: 'Invalid action' })
     }
     try {
-      await controlService(config.trusttunnel.serviceName, action)
-      const status = await getServiceStatus(config.trusttunnel.serviceName)
-      return { success: true, status }
+      const result = await controlService(config.trusttunnel.serviceName, action)
+      const effectiveName = result.detectedName || config.trusttunnel.serviceName
+      const status = await getServiceStatus(effectiveName)
+      return { success: true, status, serviceName: effectiveName }
     } catch (err) {
       return reply.code(500).send({ error: err.message })
     }

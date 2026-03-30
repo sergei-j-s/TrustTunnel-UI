@@ -3,6 +3,33 @@ import { promisify } from 'util'
 
 const execAsync = promisify(exec)
 
+/**
+ * Ищет реальное имя systemd-сервиса TrustTunnel если дефолтное не найдено.
+ * Перебирает список всех сервисов и возвращает первый, содержащий 'trusttunnel'
+ * (исключая сам UI-сервис trusttunnel-ui).
+ */
+export async function detectServiceName(fallback) {
+  try {
+    const { stdout } = await execAsync(
+      'systemctl list-units --type=service --all --no-legend --no-pager'
+    )
+    const lines = stdout.trim().split('\n')
+    for (const line of lines) {
+      const match = line.match(/^\s*(\S+\.service)/)
+      if (!match) continue
+      const name = match[1].replace('.service', '')
+      if (
+        name.toLowerCase().includes('trusttunnel') &&
+        name !== 'trusttunnel-ui' &&
+        name !== 'trusttunnel_ui'
+      ) {
+        return name
+      }
+    }
+  } catch {}
+  return fallback
+}
+
 export async function getServiceStatus(serviceName) {
   try {
     const { stdout } = await execAsync(`systemctl is-active ${serviceName}`)
@@ -34,8 +61,19 @@ export async function getServiceStatus(serviceName) {
 export async function controlService(serviceName, action) {
   const allowed = ['start', 'stop', 'restart', 'reload']
   if (!allowed.includes(action)) throw new Error(`Invalid action: ${action}`)
-  const { stdout, stderr } = await execAsync(`systemctl ${action} ${serviceName}`)
-  return { stdout, stderr }
+  try {
+    const { stdout, stderr } = await execAsync(`systemctl ${action} ${serviceName}`)
+    return { stdout, stderr }
+  } catch (err) {
+    if (err.message.includes('not found')) {
+      const detected = await detectServiceName(serviceName)
+      if (detected !== serviceName) {
+        const { stdout, stderr } = await execAsync(`systemctl ${action} ${detected}`)
+        return { stdout, stderr, detectedName: detected }
+      }
+    }
+    throw err
+  }
 }
 
 export async function enableService(serviceName) {
