@@ -1,0 +1,19 @@
+services:
+  trusttunnel-ui:
+    build: .
+    container_name: trusttunnel-ui
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /opt/trusttunnel:/opt/trusttunnel
+      - ./data:/app/data
+      - /run/systemd/private:/run/systemd/private:ro
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+    environment:
+      - NODE_ENV=production
+      - DB_PATH=/app/data/trusttunnel_ui.db
+      - JWT_SECRET=${JWT_SECRET:-change-me-please}
+      - PORT=8080
+    privileged: true
+    network_mode: host
