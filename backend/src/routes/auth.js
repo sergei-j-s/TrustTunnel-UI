@@ -25,7 +25,7 @@ export async function authRoutes(fastify) {
       return reply.code(401).send({ error: 'Invalid credentials' })
     }
 
-    db.prepare('UPDATE panel_users SET last_login = datetime("now") WHERE id = ?').run(user.id)
+    db.prepare("UPDATE panel_users SET last_login = datetime('now') WHERE id = ?").run(user.id)
 
     const token = fastify.jwt.sign({ id: user.id, username: user.username })
     return { token, username: user.username }
