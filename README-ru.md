@@ -33,8 +33,8 @@
 
 ```bash
 # Клонировать репозиторий
-git clone https://github.com/YOUR_USERNAME/trusttunnel-ui.git
-cd trusttunnel-ui
+git clone https://github.com/sergei-j-s/TrustTunnel-UI.git
+cd TrustTunnel-UI
 
 # Запустить установщик от root
 sudo bash install.sh
@@ -56,8 +56,8 @@ sudo bash install.sh
 ### Способ 2 — Docker Compose
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/trusttunnel-ui.git
-cd trusttunnel-ui
+git clone https://github.com/sergei-j-s/TrustTunnel-UI.git
+cd TrustTunnel-UI
 
 # Сгенерировать JWT-секрет
 echo "JWT_SECRET=$(openssl rand -hex 32)" > .env
@@ -74,8 +74,8 @@ docker compose up -d
 ### Способ 3 — Вручную
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/trusttunnel-ui.git
-cd trusttunnel-ui
+git clone https://github.com/sergei-j-s/TrustTunnel-UI.git
+cd TrustTunnel-UI
 
 # Собрать фронтенд
 cd frontend

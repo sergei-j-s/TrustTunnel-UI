@@ -197,12 +197,16 @@ fi
 # shellcheck source=/dev/null
 source "$NVM_DIR/nvm.sh"
 
-if ! command -v node &>/dev/null; then
+_current_node_major() {
+  node -e "console.log(process.versions.node.split('.')[0])" 2>/dev/null || echo 0
+}
+
+if ! command -v node &>/dev/null || [ "$(_current_node_major)" -lt "$NODE_MIN_VERSION" ]; then
   info "Installing Node.js 22 via nvm..."
   nvm install 22 >/dev/null 2>&1
-  nvm use 22 >/dev/null 2>&1
   nvm alias default 22 >/dev/null 2>&1
 fi
+nvm use 22 >/dev/null 2>&1
 
 NODE_VERSION=$(node -e "console.log(process.versions.node.split('.')[0])")
 if [ "$NODE_VERSION" -lt "$NODE_MIN_VERSION" ]; then

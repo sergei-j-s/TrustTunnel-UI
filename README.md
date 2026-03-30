@@ -32,8 +32,8 @@ Web panel for managing [TrustTunnel](https://github.com/TrustTunnel/TrustTunnel)
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/trusttunnel-ui.git
-cd trusttunnel-ui
+git clone https://github.com/sergei-j-s/TrustTunnel-UI.git
+cd TrustTunnel-UI
 
 # Run installer as root
 sudo bash install.sh
@@ -55,8 +55,8 @@ Default credentials: **admin / admin** — change the password immediately after
 ### Option 2 — Docker Compose
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/trusttunnel-ui.git
-cd trusttunnel-ui
+git clone https://github.com/sergei-j-s/TrustTunnel-UI.git
+cd TrustTunnel-UI
 
 # Generate a JWT secret
 echo "JWT_SECRET=$(openssl rand -hex 32)" > .env
@@ -73,8 +73,8 @@ The container runs on port **8080** and mounts `/opt/trusttunnel` from the host 
 ### Option 3 — Manual
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/trusttunnel-ui.git
-cd trusttunnel-ui
+git clone https://github.com/sergei-j-s/TrustTunnel-UI.git
+cd TrustTunnel-UI
 
 # Build frontend
 cd frontend
