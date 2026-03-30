@@ -67,6 +67,9 @@ export async function installTrustTunnel() {
   await execAsync(
     `curl -fsSL https://raw.githubusercontent.com/TrustTunnel/TrustTunnel/refs/heads/master/scripts/install.sh -o ${tmpScript}`
   )
+  // Скрипт читает ввод через /dev/tty напрямую — заменяем на /dev/stdin
+  // чтобы пайп yes мог передавать ответы
+  await execAsync(`sed -i 's|/dev/tty|/dev/stdin|g' ${tmpScript}`)
   const { stdout, stderr } = await execAsync(
     `yes | USER=$(id -un) bash ${tmpScript}`,
     { env: { ...process.env, DEBIAN_FRONTEND: 'noninteractive' } }
