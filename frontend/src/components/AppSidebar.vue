@@ -11,7 +11,7 @@ const navItems = [
   { to: '/users', label: 'VPN Users', icon: 'i-carbon-user-multiple' },
   { to: '/configs', label: 'Configs', icon: 'i-carbon-settings-adjust' },
   { to: '/logs', label: 'Logs', icon: 'i-carbon-document' },
-  { to: '/setup', label: 'Setup Wizard', icon: 'i-carbon-wizard' },
+  { to: '/setup', label: 'Setup Wizard', icon: 'i-carbon-magic-wand' },
   { to: '/settings', label: 'Settings', icon: 'i-carbon-settings' },
 ]
 </script>

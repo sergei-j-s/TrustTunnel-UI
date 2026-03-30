@@ -56,13 +56,13 @@ onUnmounted(() => clearInterval(interval))
 <template>
   <div class="flex flex-col gap-6 max-w-6xl">
     <div v-if="loading" class="flex items-center justify-center h-40">
-      <span class="i-carbon-loading animate-spin text-3xl text-primary" />
+      <span class="i-carbon-in-progress animate-spin text-3xl text-primary" />
     </div>
 
     <template v-else-if="data">
       <!-- Setup CTA (если не настроено) -->
       <div v-if="data.installed && !data.service.active && !data.service.pid" class="flex items-center gap-4 px-4 py-3 bg-primary/10 border border-primary/20 rounded-xl">
-        <span class="i-carbon-wizard text-primary text-xl shrink-0" />
+        <span class="i-carbon-magic-wand text-primary text-xl shrink-0" />
         <div class="flex-1">
           <p class="text-sm font-medium text-base">Endpoint not configured</p>
           <p class="text-xs text-subtext">Run the Setup Wizard to configure TrustTunnel before starting the service.</p>
@@ -131,13 +131,13 @@ onUnmounted(() => clearInterval(interval))
           label="Memory"
           :value="`${data.system.mem.percent}%`"
           :sub="`${formatBytes(data.system.mem.used)} / ${formatBytes(data.system.mem.total)}`"
-          icon="i-carbon-memory"
+          icon="i-carbon-finance"
         />
         <StatCard
           label="Disk"
           :value="`${data.system.disk.percent}%`"
           :sub="`${data.system.disk.used}MB used`"
-          icon="i-carbon-data-storage"
+          icon="i-carbon-object-storage"
         />
         <StatCard
           label="Uptime"

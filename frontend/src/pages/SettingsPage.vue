@@ -109,7 +109,7 @@ async function installTrustTunnel() {
       </p>
 
       <div v-if="portRestarting" class="flex items-center gap-3 text-sm text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 px-3 py-2.5 rounded-lg mb-3">
-        <span class="i-carbon-loading animate-spin shrink-0" />
+        <span class="i-carbon-in-progress animate-spin shrink-0" />
         Panel is restarting on port {{ panelPort }}… redirecting in 2s
       </div>
 
@@ -130,7 +130,7 @@ async function installTrustTunnel() {
           :disabled="portLoading || portRestarting || panelPort === currentPort"
           @click="savePort"
         >
-          <span v-if="portLoading" class="i-carbon-loading animate-spin" />
+          <span v-if="portLoading" class="i-carbon-in-progress animate-spin" />
           <span v-else class="i-carbon-save" />
           Apply
         </button>
@@ -162,7 +162,7 @@ async function installTrustTunnel() {
         <div v-if="pwSuccess" class="text-xs text-green-400 bg-green-500/10 px-3 py-2 rounded-lg">{{ pwSuccess }}</div>
         <div class="flex justify-end">
           <button type="submit" class="btn-primary" :disabled="pwLoading">
-            <span v-if="pwLoading" class="i-carbon-loading animate-spin" />
+            <span v-if="pwLoading" class="i-carbon-in-progress animate-spin" />
             <span v-else class="i-carbon-save" />
             Save Password
           </button>
@@ -181,7 +181,7 @@ async function installTrustTunnel() {
       </p>
 
       <button class="btn-primary" :disabled="installLoading" @click="installTrustTunnel">
-        <span v-if="installLoading" class="i-carbon-loading animate-spin" />
+        <span v-if="installLoading" class="i-carbon-in-progress animate-spin" />
         <span v-else class="i-carbon-download" />
         {{ installLoading ? 'Installing...' : 'Install / Update' }}
       </button>

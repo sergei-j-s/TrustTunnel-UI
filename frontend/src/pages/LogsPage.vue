@@ -60,7 +60,7 @@ onUnmounted(() => clearInterval(interval))
       </div>
 
       <button class="btn-secondary btn-sm" :disabled="loading" @click="load">
-        <span :class="loading ? 'i-carbon-loading animate-spin' : 'i-carbon-renew'" />
+        <span :class="loading ? 'i-carbon-in-progress animate-spin' : 'i-carbon-renew'" />
         Refresh
       </button>
 
@@ -91,7 +91,7 @@ onUnmounted(() => clearInterval(interval))
       >
         <pre v-if="logs" class="whitespace-pre-wrap break-all">{{ logs }}</pre>
         <div v-else-if="loading" class="flex justify-center py-8">
-          <span class="i-carbon-loading animate-spin text-2xl text-primary" />
+          <span class="i-carbon-in-progress animate-spin text-2xl text-primary" />
         </div>
         <p v-else class="text-center text-overlay py-8">No log entries found</p>
       </div>

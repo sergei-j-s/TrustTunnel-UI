@@ -67,7 +67,7 @@ async function handleLogin() {
           </div>
 
           <button type="submit" class="btn-primary w-full mt-1" :disabled="loading">
-            <span v-if="loading" class="i-carbon-loading animate-spin" />
+            <span v-if="loading" class="i-carbon-in-progress animate-spin" />
             <span v-else class="i-carbon-login" />
             {{ loading ? 'Signing in...' : 'Sign in' }}
           </button>

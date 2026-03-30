@@ -161,7 +161,7 @@ onMounted(load)
     </div>
 
     <div v-if="loading" class="flex justify-center h-32 items-center">
-      <span class="i-carbon-loading animate-spin text-3xl text-primary" />
+      <span class="i-carbon-in-progress animate-spin text-3xl text-primary" />
     </div>
 
     <div v-else-if="!filteredUsers.length" class="card text-center py-10">
@@ -266,7 +266,7 @@ onMounted(load)
             <div class="flex gap-3 justify-end mt-2">
               <button type="button" class="btn-secondary" @click="showModal = false">Cancel</button>
               <button type="submit" class="btn-primary" :disabled="actionLoading">
-                <span v-if="actionLoading" class="i-carbon-loading animate-spin" />
+                <span v-if="actionLoading" class="i-carbon-in-progress animate-spin" />
                 {{ editingUser ? 'Save' : 'Create' }}
               </button>
             </div>
@@ -296,7 +296,7 @@ onMounted(load)
               </select>
             </div>
             <button class="btn-primary" :disabled="!genAddress || actionLoading" @click="generateConfig">
-              <span v-if="actionLoading" class="i-carbon-loading animate-spin" />
+              <span v-if="actionLoading" class="i-carbon-in-progress animate-spin" />
               Generate
             </button>
 

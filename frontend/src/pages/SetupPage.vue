@@ -306,7 +306,7 @@ onMounted(loadStatus)
               <p class="text-xs text-overlay mt-1">Usually your server IP or domain. Valid for 10 years.</p>
             </div>
             <button class="btn-primary w-fit" :disabled="tlsLoading" @click="generateSelfsigned">
-              <span v-if="tlsLoading" class="i-carbon-loading animate-spin" />
+              <span v-if="tlsLoading" class="i-carbon-in-progress animate-spin" />
               <span v-else class="i-carbon-locked" />
               Generate Certificate
             </button>
@@ -333,7 +333,7 @@ onMounted(loadStatus)
               :disabled="tlsLoading || !leDomain || !leEmail"
               @click="runCertbot"
             >
-              <span v-if="tlsLoading" class="i-carbon-loading animate-spin" />
+              <span v-if="tlsLoading" class="i-carbon-in-progress animate-spin" />
               <span v-else class="i-carbon-certificate" />
               {{ tlsLoading ? 'Requesting...' : 'Request Certificate' }}
             </button>
@@ -493,7 +493,7 @@ key  = "{{ reviewData.tls.keyPath }}"</pre>
           <div v-if="applyError" class="text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{{ applyError }}</div>
 
           <button class="btn-primary w-fit" :disabled="applyLoading" @click="applyConfig">
-            <span v-if="applyLoading" class="i-carbon-loading animate-spin" />
+            <span v-if="applyLoading" class="i-carbon-in-progress animate-spin" />
             <span v-else class="i-carbon-save" />
             {{ applyLoading ? 'Applying...' : 'Apply Configuration' }}
           </button>

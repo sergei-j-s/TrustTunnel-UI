@@ -119,13 +119,13 @@ onMounted(() => loadVpnConfig())
             <span class="i-carbon-renew" /> Reload
           </button>
           <button class="btn-primary btn-sm" :disabled="saveLoading" @click="saveVpnConfig">
-            <span v-if="saveLoading" class="i-carbon-loading animate-spin" />
+            <span v-if="saveLoading" class="i-carbon-in-progress animate-spin" />
             <span v-else class="i-carbon-save" /> Save
           </button>
         </div>
       </div>
       <div v-if="loading" class="flex justify-center h-32 items-center">
-        <span class="i-carbon-loading animate-spin text-3xl text-primary" />
+        <span class="i-carbon-in-progress animate-spin text-3xl text-primary" />
       </div>
       <textarea
         v-else
@@ -147,13 +147,13 @@ onMounted(() => loadVpnConfig())
             <span class="i-carbon-renew" /> Reload
           </button>
           <button class="btn-primary btn-sm" :disabled="saveLoading" @click="saveHostsConfig">
-            <span v-if="saveLoading" class="i-carbon-loading animate-spin" />
+            <span v-if="saveLoading" class="i-carbon-in-progress animate-spin" />
             <span v-else class="i-carbon-save" /> Save
           </button>
         </div>
       </div>
       <div v-if="loading" class="flex justify-center h-32 items-center">
-        <span class="i-carbon-loading animate-spin text-3xl text-primary" />
+        <span class="i-carbon-in-progress animate-spin text-3xl text-primary" />
       </div>
       <textarea
         v-else
