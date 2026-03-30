@@ -62,7 +62,7 @@ export async function isTrustTunnelInstalled() {
 
 export async function installTrustTunnel() {
   const { stdout, stderr } = await execAsync(
-    "curl -fsSL https://raw.githubusercontent.com/TrustTunnel/TrustTunnel/refs/heads/master/scripts/install.sh | bash -s -"
+    "curl -fsSL https://raw.githubusercontent.com/TrustTunnel/TrustTunnel/refs/heads/master/scripts/install.sh | USER=$(id -un) bash -s -"
   )
   return { stdout, stderr }
 }
