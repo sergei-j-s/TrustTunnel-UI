@@ -58,22 +58,52 @@ export async function getServiceStatus(serviceName) {
   }
 }
 
+async function waitForServiceState(serviceName, expectedActive, timeoutMs = 5000, intervalMs = 300) {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, intervalMs))
+    const status = await getServiceStatus(serviceName)
+    if (status.active === expectedActive) return status
+    if (status.state === 'failed') return status
+  }
+  return getServiceStatus(serviceName)
+}
+
 export async function controlService(serviceName, action) {
   const allowed = ['start', 'stop', 'restart', 'reload']
   if (!allowed.includes(action)) throw new Error(`Invalid action: ${action}`)
-  try {
-    const { stdout, stderr } = await execAsync(`systemctl ${action} ${serviceName}`)
+
+  const runAction = async (name) => {
+    const { stdout, stderr } = await execAsync(`systemctl ${action} ${name}`)
     return { stdout, stderr }
+  }
+
+  let result
+  let effectiveName = serviceName
+  try {
+    result = await runAction(serviceName)
   } catch (err) {
-    if (err.message.includes('not found')) {
+    if (err.message.includes('not found') || err.stderr?.includes('not found')) {
       const detected = await detectServiceName(serviceName)
       if (detected !== serviceName) {
-        const { stdout, stderr } = await execAsync(`systemctl ${action} ${detected}`)
-        return { stdout, stderr, detectedName: detected }
+        result = await runAction(detected)
+        effectiveName = detected
+        result.detectedName = detected
+      } else {
+        throw err
       }
+    } else {
+      throw err
     }
-    throw err
   }
+
+  if (action === 'start' || action === 'restart') {
+    await waitForServiceState(effectiveName, true)
+  } else if (action === 'stop') {
+    await waitForServiceState(effectiveName, false)
+  }
+
+  return result
 }
 
 export async function enableService(serviceName) {

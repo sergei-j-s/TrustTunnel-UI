@@ -80,7 +80,20 @@ export async function installTrustTunnel() {
   const serviceTarget = '/etc/systemd/system/trusttunnel.service'
 
   if (existsSync(serviceTemplate)) {
-    const templateContent = readFileSync(serviceTemplate, 'utf8')
+    let templateContent = readFileSync(serviceTemplate, 'utf8')
+
+    // Заменяем относительные пути конфигов на абсолютные
+    templateContent = templateContent.replace(/\bvpn\.toml\b/g, config.trusttunnel.vpnConfig)
+    templateContent = templateContent.replace(/\bhosts\.toml\b/g, config.trusttunnel.hostsConfig)
+
+    // Добавляем WorkingDirectory если отсутствует
+    if (!templateContent.includes('WorkingDirectory=')) {
+      templateContent = templateContent.replace(
+        /(\[Service\])/,
+        `$1\nWorkingDirectory=${config.trusttunnel.installDir}`
+      )
+    }
+
     writeFileSync(serviceTarget, templateContent, 'utf8')
     steps.push({ step: 'copy_service', target: serviceTarget })
 
