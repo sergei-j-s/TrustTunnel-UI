@@ -45,7 +45,7 @@ export const vpnUsersApi = {
 export const serviceApi = {
   status: () => api.get('/service/status'),
   control: (action: 'start' | 'stop' | 'restart') => api.post(`/service/${action}`),
-  install: () => api.post('/service/install'),
+  install: (force = false) => api.post('/service/install', { force }),
   logs: (lines = 200) => api.get(`/service/logs?lines=${lines}`),
 }
 

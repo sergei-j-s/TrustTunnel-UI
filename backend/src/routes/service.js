@@ -49,11 +49,14 @@ export async function serviceRoutes(fastify) {
   })
 
   fastify.post('/api/service/install', { onRequest: [fastify.authenticate] }, async (request, reply) => {
+    const force = request.body?.force === true
     const installed = await isTrustTunnelInstalled()
-    if (installed) return reply.code(409).send({ error: 'TrustTunnel is already installed' })
+    if (installed && !force) {
+      return reply.code(409).send({ error: 'TrustTunnel is already installed', hint: 'Pass {"force": true} to reinstall' })
+    }
     try {
       const result = await installTrustTunnel()
-      return { success: true, output: result.stdout, steps: result.steps }
+      return { success: true, output: result.stdout, steps: result.steps, reinstalled: installed }
     } catch (err) {
       return reply.code(500).send({ error: err.message })
     }

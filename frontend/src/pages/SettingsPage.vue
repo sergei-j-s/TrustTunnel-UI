@@ -54,6 +54,7 @@ const pwSuccess = ref('')
 const installLoading = ref(false)
 const installOutput = ref('')
 const installError = ref('')
+const alreadyInstalled = ref(false)
 
 async function changePassword() {
   pwError.value = ''
@@ -80,14 +81,18 @@ async function changePassword() {
   }
 }
 
-async function installTrustTunnel() {
+async function installTrustTunnel(force = false) {
   installError.value = ''
   installOutput.value = ''
+  alreadyInstalled.value = false
   installLoading.value = true
   try {
-    const res = await serviceApi.install()
+    const res = await serviceApi.install(force)
     installOutput.value = res.data.output
   } catch (e: any) {
+    if (e.response?.status === 409) {
+      alreadyInstalled.value = true
+    }
     installError.value = e.response?.data?.error || 'Installation failed'
   } finally {
     installLoading.value = false
@@ -180,11 +185,22 @@ async function installTrustTunnel() {
         Downloads and installs the latest TrustTunnel endpoint to <code class="font-mono bg-surface-300 px-1 rounded">/opt/trusttunnel</code>
       </p>
 
-      <button class="btn-primary" :disabled="installLoading" @click="installTrustTunnel">
-        <span v-if="installLoading" class="i-carbon-in-progress animate-spin" />
-        <span v-else class="i-carbon-download" />
-        {{ installLoading ? 'Installing...' : 'Install / Update' }}
-      </button>
+      <div class="flex items-center gap-3">
+        <button class="btn-primary" :disabled="installLoading" @click="installTrustTunnel(false)">
+          <span v-if="installLoading" class="i-carbon-in-progress animate-spin" />
+          <span v-else class="i-carbon-download" />
+          {{ installLoading ? 'Installing...' : 'Install / Update' }}
+        </button>
+        <button
+          v-if="alreadyInstalled"
+          class="btn-secondary"
+          :disabled="installLoading"
+          @click="installTrustTunnel(true)"
+        >
+          <span class="i-carbon-restart" />
+          Reinstall (force)
+        </button>
+      </div>
 
       <div v-if="installError" class="mt-3 text-xs text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">{{ installError }}</div>
       <pre v-if="installOutput" class="mt-3 bg-surface-100 rounded px-3 py-2 text-xs font-mono text-subtext overflow-x-auto max-h-48">{{ installOutput }}</pre>
