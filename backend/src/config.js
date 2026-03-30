@@ -14,7 +14,7 @@ export const config = {
     installDir: process.env.TT_DIR || '/opt/trusttunnel',
     vpnConfig: process.env.TT_VPN_CONFIG || '/opt/trusttunnel/vpn.toml',
     hostsConfig: process.env.TT_HOSTS_CONFIG || '/opt/trusttunnel/hosts.toml',
-    credentialsFile: process.env.TT_CREDENTIALS || '/opt/trusttunnel/credentials',
+    credentialsFile: process.env.TT_CREDENTIALS || '/opt/trusttunnel/credentials.toml',
     rulesFile: process.env.TT_RULES || '/opt/trusttunnel/rules.toml',
     serviceName: process.env.TT_SERVICE || 'trusttunnel',
     endpointBinary: process.env.TT_BINARY || '/opt/trusttunnel/trusttunnel_endpoint',

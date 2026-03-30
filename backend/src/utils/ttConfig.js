@@ -22,22 +22,19 @@ export async function writeTomlFile(filePath, data) {
 export async function readCredentials() {
   try {
     const content = await fs.readFile(config.trusttunnel.credentialsFile, 'utf8')
-    const users = []
-    for (const line of content.trim().split('\n')) {
-      const trimmed = line.trim()
-      if (!trimmed || trimmed.startsWith('#')) continue
-      const [username, password] = trimmed.split(':')
-      if (username && password) users.push({ username, password })
-    }
-    return users
+    const parsed = TOML.parse(content)
+    if (!Array.isArray(parsed.client)) return []
+    return parsed.client
+      .filter((u) => u.username && u.password)
+      .map((u) => ({ username: String(u.username), password: String(u.password) }))
   } catch {
     return []
   }
 }
 
 export async function writeCredentials(users) {
-  const lines = users.map((u) => `${u.username}:${u.password}`)
-  await fs.writeFile(config.trusttunnel.credentialsFile, lines.join('\n') + '\n', 'utf8')
+  const lines = users.map((u) => `[[client]]\nusername = ${JSON.stringify(u.username)}\npassword = ${JSON.stringify(u.password)}`)
+  await fs.writeFile(config.trusttunnel.credentialsFile, lines.join('\n\n') + '\n', 'utf8')
 }
 
 export async function generateClientConfig(username, address, format = 'deeplink') {

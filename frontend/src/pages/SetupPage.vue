@@ -469,24 +469,28 @@ onMounted(loadStatus)
           <div class="flex flex-col gap-2 text-xs">
             <div class="bg-surface-100 rounded-lg p-3">
               <p class="font-mono text-primary font-medium mb-2">vpn.toml</p>
-              <pre class="text-subtext whitespace-pre">listen_address = "{{ reviewData.network.listenAddress }}"
-credentials = "{{ $route ? '/opt/trusttunnel/credentials' : '' }}"
-rules       = "{{ $route ? '/opt/trusttunnel/rules.toml' : '' }}"</pre>
+              <pre class="text-subtext whitespace-pre">listen_address   = "{{ reviewData.network.listenAddress }}"
+credentials_file = "/opt/trusttunnel/credentials.toml"
+rules_file       = "/opt/trusttunnel/rules.toml"</pre>
             </div>
             <div class="bg-surface-100 rounded-lg p-3">
               <p class="font-mono text-primary font-medium mb-2">hosts.toml</p>
-              <pre class="text-subtext whitespace-pre">[[hosts]]
-name = "{{ reviewData.tls.serverName }}"
-cert = "{{ reviewData.tls.certPath }}"
-key  = "{{ reviewData.tls.keyPath }}"</pre>
+              <pre class="text-subtext whitespace-pre">ping_hosts = []
+speedtest_hosts = []
+reverse_proxy_hosts = []
+
+[[main_hosts]]
+hostname         = "{{ reviewData.tls.serverName }}"
+cert_chain_path  = "{{ reviewData.tls.certPath }}"
+private_key_path = "{{ reviewData.tls.keyPath }}"</pre>
             </div>
             <div class="bg-surface-100 rounded-lg p-3">
               <p class="font-mono text-primary font-medium mb-2">rules.toml</p>
-              <pre class="text-subtext">rules = [{{ reviewData.rules.entries.length ? `\n  ${reviewData.rules.entries.map(r => `"${r}"`).join(',\n  ')}\n` : '' }}]</pre>
+              <pre class="text-subtext whitespace-pre">{{ reviewData.rules.entries.length ? reviewData.rules.entries.map(r => `[[rule]]\n${r.startsWith('prefix:') ? `client_random_prefix = "${r.slice(7)}"` : r.startsWith('mask:') ? `client_random_prefix = "${r.slice(5)}"` : `cidr = "${r}"`}\naction = "deny"`).join('\n\n') : '# (empty — all connections allowed by default)' }}</pre>
             </div>
             <div v-if="reviewData.initialUsers.length" class="bg-surface-100 rounded-lg p-3">
-              <p class="font-mono text-primary font-medium mb-2">credentials</p>
-              <pre class="text-subtext">{{ reviewData.initialUsers.map(u => `${u.username}:***`).join('\n') }}</pre>
+              <p class="font-mono text-primary font-medium mb-2">credentials.toml</p>
+              <pre class="text-subtext">{{ reviewData.initialUsers.map(u => `[[client]]\nusername = "${u.username}"\npassword = "***"`).join('\n\n') }}</pre>
             </div>
           </div>
 

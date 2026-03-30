@@ -50,18 +50,21 @@ export async function setupRoutes(fastify) {
       // --- vpn.toml ---
       const vpnToml = {
         listen_address: network.listenAddress,
-        credentials: config.trusttunnel.credentialsFile,
-        rules: config.trusttunnel.rulesFile,
+        credentials_file: config.trusttunnel.credentialsFile,
+        rules_file: config.trusttunnel.rulesFile,
       }
       await fs.writeFile(config.trusttunnel.vpnConfig, TOML.stringify(vpnToml), 'utf8')
 
       // --- hosts.toml ---
       const hostsToml = {
-        hosts: [
+        ping_hosts: [],
+        speedtest_hosts: [],
+        reverse_proxy_hosts: [],
+        main_hosts: [
           {
-            name: tls.serverName || extractHost(network.listenAddress),
-            cert: tls.certPath,
-            key: tls.keyPath,
+            hostname: tls.serverName || extractHost(network.listenAddress),
+            cert_chain_path: tls.certPath,
+            private_key_path: tls.keyPath,
           },
         ],
       }
@@ -70,8 +73,8 @@ export async function setupRoutes(fastify) {
       // --- rules.toml ---
       const rulesEntries = (rules?.entries || []).filter(Boolean)
       const rulesContent = rulesEntries.length
-        ? `rules = [\n${rulesEntries.map((r) => `  "${r}"`).join(',\n')}\n]\n`
-        : 'rules = []\n'
+        ? rulesEntries.map((r) => buildRuleToml(r)).join('\n') + '\n'
+        : ''
       await fs.writeFile(config.trusttunnel.rulesFile, rulesContent, 'utf8')
 
       // --- credentials --- + sync DB
@@ -199,4 +202,15 @@ function extractHost(listenAddress) {
   const parts = listenAddress.split(':')
   const host = parts[0]
   return host === '0.0.0.0' || host === '' ? 'localhost' : host
+}
+
+function buildRuleToml(entry) {
+  const trimmed = entry.trim()
+  if (trimmed.startsWith('prefix:')) {
+    return `[[rule]]\nclient_random_prefix = ${JSON.stringify(trimmed.slice(7))}\naction = "deny"\n`
+  }
+  if (trimmed.startsWith('mask:')) {
+    return `[[rule]]\nclient_random_prefix = ${JSON.stringify(trimmed.slice(5))}\naction = "deny"\n`
+  }
+  return `[[rule]]\ncidr = ${JSON.stringify(trimmed)}\naction = "deny"\n`
 }
