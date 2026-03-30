@@ -61,8 +61,31 @@ export async function isTrustTunnelInstalled() {
 }
 
 export async function installTrustTunnel() {
+  const steps = []
+
   const { stdout, stderr } = await execAsync(
     "curl -fsSL https://raw.githubusercontent.com/TrustTunnel/TrustTunnel/refs/heads/master/scripts/install.sh | USER=$(id -un) bash -s -"
   )
-  return { stdout, stderr }
+  steps.push({ step: 'install_script', stdout, stderr })
+
+  const serviceTemplate = `${config.trusttunnel.installDir}/trusttunnel.service.template`
+  const serviceTarget = '/etc/systemd/system/trusttunnel.service'
+
+  if (existsSync(serviceTemplate)) {
+    const templateContent = readFileSync(serviceTemplate, 'utf8')
+    writeFileSync(serviceTarget, templateContent, 'utf8')
+    steps.push({ step: 'copy_service', target: serviceTarget })
+
+    const { stdout: reloadOut } = await execAsync('systemctl daemon-reload')
+    steps.push({ step: 'daemon_reload', stdout: reloadOut })
+
+    const { stdout: enableOut, stderr: enableErr } = await execAsync(
+      `systemctl enable --now ${config.trusttunnel.serviceName}`
+    )
+    steps.push({ step: 'enable_service', stdout: enableOut, stderr: enableErr })
+  } else {
+    steps.push({ step: 'copy_service', skipped: true, reason: `template not found: ${serviceTemplate}` })
+  }
+
+  return { steps, stdout, stderr }
 }

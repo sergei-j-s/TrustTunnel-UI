@@ -53,7 +53,7 @@ export async function serviceRoutes(fastify) {
     if (installed) return reply.code(409).send({ error: 'TrustTunnel is already installed' })
     try {
       const result = await installTrustTunnel()
-      return { success: true, output: result.stdout }
+      return { success: true, output: result.stdout, steps: result.steps }
     } catch (err) {
       return reply.code(500).send({ error: err.message })
     }
