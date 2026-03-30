@@ -63,8 +63,13 @@ export async function isTrustTunnelInstalled() {
 export async function installTrustTunnel() {
   const steps = []
 
+  const tmpScript = '/tmp/tt_install.sh'
+  await execAsync(
+    `curl -fsSL https://raw.githubusercontent.com/TrustTunnel/TrustTunnel/refs/heads/master/scripts/install.sh -o ${tmpScript}`
+  )
   const { stdout, stderr } = await execAsync(
-    "curl -fsSL https://raw.githubusercontent.com/TrustTunnel/TrustTunnel/refs/heads/master/scripts/install.sh | USER=$(id -un) bash -s -"
+    `yes | USER=$(id -un) bash ${tmpScript}`,
+    { env: { ...process.env, DEBIAN_FRONTEND: 'noninteractive' } }
   )
   steps.push({ step: 'install_script', stdout, stderr })
 
